@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>💥Xalora20💥</title>
+  <meta name="description" content="Watch ads, earn points, and withdraw via mobile payment.">
+  <meta name="keywords" content="earn money, watch ads, withdraw, bkash, nagad, monetage">
+  <meta name="author" content="Md Srabon Ahmed">
+  <meta property="og:title" content="Monetage Mini App">
+  <meta property="og:description" content="Watch ads, earn points, and withdraw via mobile payment!">
+  <meta property="og:type" content="website">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+      background-size: 200% 200%;
+      animation: gradient 5s ease infinite;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    @keyframes gradient {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    .app {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 25px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 370px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .developer {
+      font-size: 12px;
+      background-color: #00ffae;
+      padding: 6px 12px;
+      border-radius: 50px;
+      display: inline-block;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .developer:hover {
+      background-color: #00c08b;
+    }
+    .stats {
+      margin: 15px 0;
+      font-size: 14px;
+    }
+    .progress-circle {
+      width: 80px;
+      height: 80px;
+      border: 4px solid #00ffae;
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      border: none;
+      border-radius: 8px;
+      background: #00ffae;
+      font-size: 15px;
+      font-weight: 600;
+      color: #000;
+      box-shadow: 0 5px 0 #00c08b;
+      transition: all 0.2s ease, transform 0.1s ease;
+      transform: perspective(1px) translateZ(0);
+    }
+    .btn:active {
+      transform: scale(0.96);
+      box-shadow: 0 3px 0 #00c08b;
+    }
+    .withdraw-form {
+      margin-top: 20px;
+      display: none;
+      text-align: left;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      margin-top: 10px;
+      background: #222;
+      color: #fff;
+      font-size: 14px;
+    }
+    #withdraw-status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>💥Xalora20💥</h1>
+    <div class="developer" onclick="window.location.href='https://t.me/Sayedbro7'">
+      Developer: MD Abu Sayed
+    </div>
+
+    <div class="stats">
+      <p>Welcome: <span id="user-name">@Sayedbro7</span></p>
+      <p>Watched Ads: <span id="watched-ads">0</span></p>
+      <p>Points: <span id="earned-points">0.00</span></p>
+    </div>
+
+    <div class="progress-circle"><span id="ads-progress">0%</span></div>
+
+    <button class="btn" onclick="watchAd()">🎬 Watch Ad</button>
+    <button class="btn" onclick="startAutoAds()">▶️ Auto Ads</button>
+    <button class="btn" onclick="stopAutoAds()">⏹️ Stop Auto</button>
+    <button class="btn" onclick="showPopupAd()">🎁 Popup Reward</button>
+    <button class="btn" onclick="showWithdraw()">💸 Withdraw</button>
+
+    <div class="withdraw-form" id="withdraw-form">
+      <input type="number" id="withdraw-amount" placeholder="Enter points (min 1000)">
+      <select id="payment-method">
+        <option value="bkash">Bkash</option>
+        <option value="nagad">Nagad</option>
+      </select>
+      <input type="text" id="withdraw-phone" placeholder="Phone number">
+      <button class="btn" onclick="withdrawPoints()">✅ Submit</button>
+      <p id="withdraw-status"></p>
+    </div>
+  </div>
+
+  <!-- Adsterra SDK -->
+  <script src="//jagnaimsee.net/vignette.min.js" data-zone="9502273" data-sdk="show_9502273"></script>
+
+  <script>
+    const MIN_WITHDRAW = 1000;
+    const BOT_TOKEN = "7673150127:AAE2NAn1uZHkWB7vhATY3zULK1IcAL48NF8";
+    const ADMIN_USERNAME = "@Sayedbro7";
+    const TELEGRAM_CHAT_ID = 7243906826
+
+    let watchedAds = parseInt(localStorage.getItem("watchedAds")) || 0;
+    let earnedPoints = parseFloat(localStorage.getItem("earnedPoints")) || 0;
+    let autoAdInterval;
+
+    document.getElementById("watched-ads").textContent = watchedAds;
+    document.getElementById("earned-points").textContent = earnedPoints.toFixed(2);
+    updateProgress();
+
+    function watchAd() {
+      if (typeof show_9502273 === 'function') {
+        show_9502273().then(() => {
+          addPoints(0.50);
+        });
+      }
+    }
+
+    function startAutoAds() {
+      autoAdInterval = setInterval(() => {
+        show_9502273().then(() => {
+          addPoints(0.50);
+        });
+      }, 10000);
+    }
+
+    function stopAutoAds() {
+      clearInterval(autoAdInterval);
+    }
+
+    function showPopupAd() {
+      show_9502273('pop').then(() => {
+        addPoints(.05);
+        alert("🎉 Thanks! You got 0.05 point.");
+      }).catch(() => {
+        alert("⚠️ Ad failed to load.");
+      });
+    }
+
+    function addPoints(pts) {
+      watchedAds++;
+      earnedPoints += pts;
+      localStorage.setItem("watchedAds", watchedAds);
+      localStorage.setItem("earnedPoints", earnedPoints.toFixed(2));
+      document.getElementById("watched-ads").textContent = watchedAds;
+      document.getElementById("earned-points").textContent = earnedPoints.toFixed(2);
+      updateProgress();
+    }
+
+    function updateProgress() {
+      let progress = Math.min(100, (watchedAds / 10) * 100);
+      document.getElementById("ads-progress").textContent = `${progress.toFixed(0)}%`;
+    }
+
+    function showWithdraw() {
+      document.getElementById("withdraw-form").style.display = "block";
+    }
+
+    function withdrawPoints() {
+      const amount = parseFloat(document.getElementById("withdraw-amount").value);
+      const method = document.getElementById("payment-method").value;
+      const phone = document.getElementById("withdraw-phone").value;
+
+      if (amount < MIN_WITHDRAW) {
+        return updateStatus(`❌ অন্তত ${MIN_WITHDRAW} পয়েন্ট দরকার (৳50 তুলতে)`);
+      }
+      if (amount > earnedPoints) {
+        return updateStatus(`❌ পর্যাপ্ত পয়েন্ট নেই (বর্তমানে ${earnedPoints.toFixed(2)} পয়েন্ট)`);
+      }
+
+      earnedPoints -= amount;
+      localStorage.setItem("earnedPoints", earnedPoints.toFixed(2));
+      document.getElementById("earned-points").textContent = earnedPoints.toFixed(2);
+
+      const takaAmount = ((amount / 1000) * 50).toFixed(2);
+      const message = `🔔 নতুন উইড্রো অনুরোধ\n\n👤 ইউজার: ${ADMIN_USERNAME}\n💰 পয়েন্ট: ${amount} (~৳${takaAmount})\n📱 পেমেন্ট: ${method}\n📞 ফোন: ${phone}`;
+      sendTelegram(message);
+
+      updateStatus("✅ উইড্রো অনুরোধ পাঠানো হয়েছে!");
+      document.getElementById("withdraw-amount").value = "";
+      document.getElementById("withdraw-phone").value = "";
+    }
+
+    function updateStatus(msg) {
+      document.getElementById("withdraw-status").textContent = msg;
+    }
+
+    function sendTelegram(msg) {
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(msg)}`);
+    }
+  </script>
+</body><script type='text/javascript' src='//pl26661413.profitableratecpm.com/e4/4d/88/e44d88716ac9780596f81b695e0b81d5.js'></script>
+</html>
